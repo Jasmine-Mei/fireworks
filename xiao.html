@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background-color: #000;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+    // 模拟烟花出现
+    document.onclick = function (ev) {
+        var oEvent = ev || event;
+        var aDiv = [];
+        var oDiv = null;
+        // 动态生成一个div元素
+        var _oDiv = document.createElement('div');
+        var i = 0;
+        // 获取点击事件的坐标
+        var x = oEvent.clientX;
+        var y = oEvent.clientY;
+        // 设置div样式
+        _oDiv.style.position = 'absolute';
+        _oDiv.style.background = 'red';
+        _oDiv.style.width = '2px';
+        _oDiv.style.height = '270px';
+        _oDiv.style.borderRadius = '50% 1px';
+        _oDiv.style.left = oEvent.clientX + 'px';
+        _oDiv.style.top = document.documentElement.clientHeight + 'px';
+        // 将div元素放到页面中
+        document.body.appendChild(_oDiv);
+        var t = setInterval(function () {
+            if (_oDiv.offsetTop <= y) {
+                clearInterval(t);
+                show();
+                document.body.removeChild(_oDiv);
+            }
+            _oDiv.style.top = _oDiv.offsetTop - 30 + 'px';
+        }, 30);
+        // 烟花在爆炸的时候，烟花消失，取而代之的是100个重叠在一起的彩色小点
+        function show() {
+            var oDiv = null;
+            for (i = 0; i < 100; i++) {
+                oDiv = document.createElement('div');
+                oDiv.style.width = '3px';
+                oDiv.style.height = '3px';
+                oDiv.style.background = '#' + Math.ceil(Math.random() * 0xEFFFFF + 0x0FFFFF).toString(16);
+                oDiv.style.position = 'absolute';
+                oDiv.style.left = x + 'px';
+                oDiv.style.top = y + 'px';
+                var a = Math.random() * 360;
+                oDiv.speedX = Math.sin(a * 180 / Math.PI) * 20 * Math.random();
+                oDiv.speedY = Math.cos(a * 180 / Math.PI) * 20 * Math.random();
+                document.body.appendChild(oDiv);
+                aDiv.push(oDiv);
+            }
+        };
+        // 爆炸，重叠在一起的100个彩色方块随机地向四周抛射散落
+        setInterval(doMove, 30);
+        function doMove() {
+            for (i = 0; i < aDiv.length; i++) {
+                aDiv[i].style.left = aDiv[i].offsetLeft + aDiv[i].speedX + 'px';
+                aDiv[i].style.top = aDiv[i].offsetTop + aDiv[i].speedY + 'px';
+                aDiv[i].speedY += 1;
+                if (aDiv[i].offsetLeft < 0 || aDiv[i].offsetLeft > document.documentElement.clientWidth || aDiv[i].offsetTop < 0 || aDiv[i].offsetTop > document.documentElement.clientHeight) {
+                    document.body.removeChild(aDiv[i]);
+                    aDiv.splice(i, 1);
+                }
+            }
+        }
+    }
+</script>
+
+</html>
